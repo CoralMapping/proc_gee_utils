@@ -4,7 +4,7 @@ import os
 import ee
 
 
-def authenticate():
+def authenticate() -> None:
     service_account_key = os.environ['SERVICE_ACCOUNT_KEY']
     service_account_name = json.loads(service_account_key)['client_email']
     credentials = ee.ServiceAccountCredentials(service_account_name,
@@ -12,7 +12,7 @@ def authenticate():
     ee.Initialize(credentials)
 
 
-def create_asset_folder(asset_id):
+def create_asset_folder(asset_id: str) -> None:
     # One folder at a time, make sure the full path exists in GEE
     # The last segment is the asset name, not a folder name
     if asset_id.startswith('/'):
@@ -29,7 +29,7 @@ def create_asset_folder(asset_id):
                                 opt_path=path)
 
 
-def export_to_asset(aoi, image, asset_id):
+def export_to_asset(aoi: dict, image: ee.Image, asset_id: str) -> str:
     try:
         region = ee.Geometry.Polygon(aoi)
     except ee.ee_exception.EEException:
@@ -44,7 +44,7 @@ def export_to_asset(aoi, image, asset_id):
     return export.id
 
 
-def export_to_gcs(aoi, image, gcs_bucket_name, gcs_path):
+def export_to_gcs(aoi: dict, image: ee.Image, gcs_bucket_name: str, gcs_path: str) -> str:
     try:
         region = ee.Geometry.Polygon(aoi)
     except ee.ee_exception.EEException:
