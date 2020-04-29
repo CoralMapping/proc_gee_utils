@@ -18,7 +18,7 @@ class TestCreateAssetFolder:
         mock_ee.data.getInfo.side_effect = info_return_values
         mock_ee.data.createAsset.return_value = {'type': 'Folder', 'id': self.fake_gee_asset_path}
 
-        with patch.multiple('src.eu',
+        with patch.multiple('eeutils.eu',
                             ee=mock_ee):
             eu.create_asset_folder(self.fake_gee_asset_path)
 
@@ -38,7 +38,7 @@ class TestCreateAssetFolder:
     def test_strips_leading_and_trailing_slashes_from_asset_id(self, asset_id):
         mock_ee = MagicMock()
         mock_ee.data.getInfo.return_value = None
-        with patch('src.eu.ee', mock_ee):
+        with patch('eeutils.eu.ee', mock_ee):
             eu.create_asset_folder(asset_id)
 
         expected_asset = {'type': 'Folder'}
