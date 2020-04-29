@@ -20,7 +20,7 @@ menu:
 
 .PHONY: test
 test:  $(shell find $(CURDIR)/eeutils -type f) ## Run the unit and integration tests
-	@ PYTHONPATH="$(CURDIR)" && pipenv run pytest
+	@ source tests/env.sh && pipenv run pytest
 
 .PHONY: build
 build:  $(archive) ## Build the Python archive
