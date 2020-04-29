@@ -1,0 +1,50 @@
+version: 2.1
+commands:
+  setup:
+    steps:
+      - setup_remote_docker
+      - checkout
+      - run: pipenv install
+executors:
+  circleci_executor:
+    docker:
+      - image: circleci/python:3.6.9
+jobs:
+  test:
+    executor: circleci_executor
+    steps:
+      - setup
+      - run: make test
+  build:
+    executor: circleci_executor
+    steps:
+      - setup
+      - run: |
+          if [ "$CIRCLE_BRANCH" = "develop" ]; then
+            make build beta_tag_suffix=""
+          else
+            make build beta_tag_suffix="-$CIRCLE_BRANCH"
+          fi
+      - persist_to_workspace:
+          root: .
+          paths:
+            - dist/*.tar.gz
+  publish:
+    executor: circleci_executor
+    steps:
+      - setup
+      - attach_workspace:
+          at: .
+      - run: touch dist/*.tar.gz
+      - run: make publish pypi_repository_password="$PYPI_REPOSITORY_PASSWORD"
+workflows:
+  version: 2
+  ci:
+    jobs:
+      - test: {}
+      - build:
+          requires:
+            - test
+      - publish:
+          requires:
+            - build
