@@ -12,10 +12,7 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     packages=find_packages(),
-    install_requires=[
-        'earthengine-api>=0.1.219'
-        'google-cloud-storage>=1.16.1'
-    ],
+    install_requires=['earthengine-api>=0.1.219'],
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: Apache 2.0 Software License',
