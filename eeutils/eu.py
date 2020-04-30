@@ -1,3 +1,5 @@
+"""A utility library for interacting with the Google Earth Engine (GEE) API."""
+
 import json
 import os
 
@@ -5,6 +7,18 @@ import ee
 
 
 def authenticate() -> None:
+    """Authenticate with the GEE API.
+
+    A SERVICE_ACCOUNT_KEY environment variable must be set with the key to a
+    Google Cloud Platform service account that has permissions in GEE.
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
+
     service_account_key = os.environ['SERVICE_ACCOUNT_KEY']
     service_account_name = json.loads(service_account_key)['client_email']
     credentials = ee.ServiceAccountCredentials(service_account_name,
@@ -13,8 +27,18 @@ def authenticate() -> None:
 
 
 def create_asset_folder(asset_id: str) -> None:
-    # One folder at a time, make sure the full path exists in GEE
-    # The last segment is the asset name, not a folder name
+    """Create an asset folder in GEE.
+
+    Also create intermediate folders along the path, if they don't already
+    exist.
+
+    Args:
+        asset_id: A path to the folder to be created.
+
+    Returns:
+        None
+    """
+
     if asset_id.startswith('/'):
         asset_id = asset_id[1:]
     if asset_id.endswith('/'):
@@ -30,6 +54,16 @@ def create_asset_folder(asset_id: str) -> None:
 
 
 def export_to_asset(aoi: dict, image: ee.Image, asset_id: str) -> str:
+    """Export an image to GEE as a GEE asset.
+
+    Args:
+        aoi: A GeoJSON geometry describing the geographic area to export.
+        image: An instance of ee.Image - the image to export.
+        asset_id: The ID of the GEE asset to be created.
+
+    Returns:
+        A string containing the GEE export task ID.
+    """
     try:
         region = ee.Geometry.Polygon(aoi)
     except ee.ee_exception.EEException:
@@ -45,6 +79,19 @@ def export_to_asset(aoi: dict, image: ee.Image, asset_id: str) -> str:
 
 
 def export_to_gcs(aoi: dict, image: ee.Image, gcs_bucket_name: str, gcs_path: str) -> str:
+    """Export an image to Google Cloud Storage (GCS).
+
+    Depending on the size of the image, GEE may export it in multiple chunks.
+
+    Args:
+        aoi: A GeoJSON geometry describing the geographic area to export.
+        image: An instance of ee.Image - the image to export.
+        gcs_bucket_name: The name of the target GCS bucket.
+        gcs_path: The path in the bucket where the image should be exported.
+
+    Returns:
+        A string containing the GEE export task ID.
+    """
     try:
         region = ee.Geometry.Polygon(aoi)
     except ee.ee_exception.EEException:
