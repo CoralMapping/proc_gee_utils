@@ -1,8 +1,39 @@
+import json
 from unittest.mock import call, MagicMock, patch
 
 import pytest
 
 from eeutils import eu
+
+
+class TestAuthenticate:
+
+    def test_happy_path(self):
+        mock_os = MagicMock()
+        fake_service_account_key = json.dumps({'client_email': 'foo@bar.com'})
+        mock_os.environ = {'SERVICE_ACCOUNT_KEY': fake_service_account_key}
+        mock_ee = MagicMock()
+        fake_credentials = MagicMock()
+        mock_ee.ServiceAccountCredentials.return_value = fake_credentials
+        with patch.multiple('eeutils.eu',
+                            ee=mock_ee,
+                            os=mock_os):
+            eu.authenticate()
+
+        mock_ee.ServiceAccountCredentials.assert_called_once_with('foo@bar.com',
+                                                                  key_data=fake_service_account_key)
+        mock_ee.Initialize.assert_called_once_with(fake_credentials)
+
+    def test_clear_message_if_key_is_invalid_json(self):
+        mock_os = MagicMock()
+        fake_service_account_key = ''
+        mock_os.environ = {'SERVICE_ACCOUNT_KEY': fake_service_account_key}
+        with pytest.raises(ValueError) as e:
+            with patch('eeutils.eu.os', mock_os):
+                eu.authenticate()
+
+        expected_message = 'SERVICE_ACCOUNT_KEY is empty or contains invalid JSON'
+        assert expected_message in e.exconly()
 
 
 class TestCreateAssetFolder:
