@@ -7,7 +7,7 @@ with open("README.md", "r") as f:
 
 setup(
     name='eeutils',
-    version='0.0.1',
+    version='0.0.2',
     description='Utility functions for Google Earth Engine',
     long_description=long_description,
     long_description_content_type='text/markdown',

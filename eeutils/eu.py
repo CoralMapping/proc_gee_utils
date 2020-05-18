@@ -20,7 +20,10 @@ def authenticate() -> None:
     """
 
     service_account_key = os.environ['SERVICE_ACCOUNT_KEY']
-    service_account_name = json.loads(service_account_key)['client_email']
+    try:
+        service_account_name = json.loads(service_account_key)['client_email']
+    except json.decoder.JSONDecodeError as e:
+        raise ValueError('SERVICE_ACCOUNT_KEY is empty or contains invalid JSON') from e
     credentials = ee.ServiceAccountCredentials(service_account_name,
                                                key_data=service_account_key)
     ee.Initialize(credentials)
