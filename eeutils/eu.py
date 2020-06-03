@@ -66,6 +66,7 @@ def export_to_asset(aoi: dict,
         aoi: A GeoJSON geometry describing the geographic area to export.
         image: An instance of ee.Image - the image to export.
         asset_id: The ID of the GEE asset to be created.
+        crs: Optional.  If provided, convert the image to this Coordinate Reference System.
 
     Returns:
         A string containing the GEE export task ID.
@@ -103,6 +104,7 @@ def export_to_gcs(aoi: dict,
         image: An instance of ee.Image - the image to export.
         gcs_bucket_name: The name of the target GCS bucket.
         gcs_path: The path in the bucket where the image should be exported.
+        crs: Optional.  If provided, convert the image to this Coordinate Reference System.
 
     Returns:
         A string containing the GEE export task ID.
