@@ -56,13 +56,17 @@ def create_asset_folder(asset_id: str) -> None:
                                 opt_path=path)
 
 
-def export_to_asset(aoi: dict, image: ee.Image, asset_id: str) -> str:
+def export_to_asset(aoi: dict,
+                    image: ee.Image,
+                    asset_id: str,
+                    crs: str=None) -> str:
     """Export an image to GEE as a GEE asset.
 
     Args:
         aoi: A GeoJSON geometry describing the geographic area to export.
         image: An instance of ee.Image - the image to export.
         asset_id: The ID of the GEE asset to be created.
+        crs: Optional.  If provided, convert the image to this Coordinate Reference System.
 
     Returns:
         A string containing the GEE export task ID.
@@ -71,17 +75,26 @@ def export_to_asset(aoi: dict, image: ee.Image, asset_id: str) -> str:
         region = ee.Geometry.Polygon(aoi)
     except ee.ee_exception.EEException:
         region = ee.Geometry.MultiPolygon(aoi)
-    export = ee.batch.Export.image.toAsset(image=image,
-                                           assetId=asset_id,
-                                           region=region,
-                                           scale=10,
-                                           maxPixels=1e13)
+    export_kwargs = {
+        'image': image,
+        'assetId': asset_id,
+        'region': region,
+        'scale': 10,
+        'maxPixels': 1e13
+    }
+    if crs:
+        export_kwargs.update({'crs': crs})
+    export = ee.batch.Export.image.toAsset(**export_kwargs)
     export.start()
 
     return export.id
 
 
-def export_to_gcs(aoi: dict, image: ee.Image, gcs_bucket_name: str, gcs_path: str) -> str:
+def export_to_gcs(aoi: dict,
+                  image: ee.Image,
+                  gcs_bucket_name: str,
+                  gcs_path: str,
+                  crs: str=None) -> str:
     """Export an image to Google Cloud Storage (GCS).
 
     Depending on the size of the image, GEE may export it in multiple chunks.
@@ -91,6 +104,7 @@ def export_to_gcs(aoi: dict, image: ee.Image, gcs_bucket_name: str, gcs_path: st
         image: An instance of ee.Image - the image to export.
         gcs_bucket_name: The name of the target GCS bucket.
         gcs_path: The path in the bucket where the image should be exported.
+        crs: Optional.  If provided, convert the image to this Coordinate Reference System.
 
     Returns:
         A string containing the GEE export task ID.
@@ -99,12 +113,17 @@ def export_to_gcs(aoi: dict, image: ee.Image, gcs_bucket_name: str, gcs_path: st
         region = ee.Geometry.Polygon(aoi)
     except ee.ee_exception.EEException:
         region = ee.Geometry.MultiPolygon(aoi)
-    export = ee.batch.Export.image.toCloudStorage(image=image,
-                                                  bucket=gcs_bucket_name,
-                                                  fileNamePrefix=gcs_path,
-                                                  region=region,
-                                                  scale=10,
-                                                  maxPixels=1e13)
+    export_kwargs = {
+        'image': image,
+        'bucket': gcs_bucket_name,
+        'fileNamePrefix': gcs_path,
+        'region': region,
+        'scale': 10,
+        'maxPixels': 1e13
+    }
+    if crs:
+        export_kwargs.update({'crs': crs})
+    export = ee.batch.Export.image.toCloudStorage(**export_kwargs)
     export.start()
 
     return export.id
