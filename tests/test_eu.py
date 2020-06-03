@@ -79,3 +79,78 @@ class TestCreateAssetFolder:
     def test_raises_if_asset_id_is_too_short(self):
         with pytest.raises(ValueError):
             eu.create_asset_folder('too/short')
+
+
+@pytest.mark.parametrize('input_crs,extra_crs', [
+    (None, {}),
+    ('EPSG:BOGUS', {'crs': 'EPSG:BOGUS'})
+])
+def test_export_to_asset(input_crs, extra_crs):
+    fake_aoi = {'foo': 'bar'}
+    fake_image = MagicMock()
+    fake_asset_id = 'bogus/path/to/asset'
+    mock_geometry = MagicMock()
+    fake_task_id = 'MYFAKETASKIDMYFAKETASKID'
+    mock_ee = MagicMock()
+    mock_export = MagicMock(id=fake_task_id)
+    mock_ee.Geometry.Polygon.return_value = mock_geometry
+    mock_ee.batch.Export.image.toAsset.return_value = mock_export
+
+    with patch('eeutils.eu.ee', mock_ee):
+        actual_task_id = eu.export_to_asset(fake_aoi,
+                                            fake_image,
+                                            fake_asset_id,
+                                            input_crs)
+
+    expected_export_kwargs = {
+        'image': fake_image,
+        'assetId': fake_asset_id,
+        'region': mock_geometry,
+        'scale': 10,
+        'maxPixels': 1e13
+    }
+    expected_export_kwargs.update(extra_crs)
+
+    mock_ee.Geometry.Polygon.assert_called_once_with(fake_aoi)
+    mock_ee.batch.Export.image.toAsset.assert_called_once_with(**expected_export_kwargs)
+    mock_export.start.assert_called_once_with()
+    assert actual_task_id == fake_task_id
+
+
+@pytest.mark.parametrize('input_crs,extra_crs', [
+    (None, {}),
+    ('EPSG:BOGUS', {'crs': 'EPSG:BOGUS'})
+])
+def test_export_to_gcs(input_crs, extra_crs):
+    fake_aoi = {'foo': 'bar'}
+    fake_image = MagicMock()
+    fake_gcs_bucket_name = 'bogus-bucket'
+    fake_gcs_path= 'bogus/path/to/blob'
+    mock_geometry = MagicMock()
+    fake_task_id = 'MYFAKETASKIDMYFAKETASKID'
+    mock_ee = MagicMock()
+    mock_export = MagicMock(id=fake_task_id)
+    mock_ee.Geometry.Polygon.return_value = mock_geometry
+    mock_ee.batch.Export.image.toCloudStorage.return_value = mock_export
+
+    with patch('eeutils.eu.ee', mock_ee):
+        actual_task_id = eu.export_to_gcs(fake_aoi,
+                                          fake_image,
+                                          fake_gcs_bucket_name,
+                                          fake_gcs_path,
+                                          input_crs)
+
+    expected_export_kwargs = {
+        'image': fake_image,
+        'bucket': fake_gcs_bucket_name,
+        'fileNamePrefix': fake_gcs_path,
+        'region': mock_geometry,
+        'scale': 10,
+        'maxPixels': 1e13
+    }
+    expected_export_kwargs.update(extra_crs)
+
+    mock_ee.Geometry.Polygon.assert_called_once_with(fake_aoi)
+    mock_ee.batch.Export.image.toCloudStorage.assert_called_once_with(**expected_export_kwargs)
+    mock_export.start.assert_called_once_with()
+    assert actual_task_id == fake_task_id
