@@ -81,11 +81,11 @@ class TestCreateAssetFolder:
             eu.create_asset_folder('too/short')
 
 
-@pytest.mark.parametrize('input_crs,extra_crs', [
+@pytest.mark.parametrize('input_crs,extra_kwarg', [
     (None, {}),
     ('EPSG:BOGUS', {'crs': 'EPSG:BOGUS'})
 ])
-def test_export_to_asset(input_crs, extra_crs):
+def test_export_to_asset(input_crs, extra_kwarg):
     fake_aoi = {'foo': 'bar'}
     fake_image = MagicMock()
     fake_asset_id = 'bogus/path/to/asset'
@@ -109,7 +109,7 @@ def test_export_to_asset(input_crs, extra_crs):
         'scale': 10,
         'maxPixels': 1e13
     }
-    expected_export_kwargs.update(extra_crs)
+    expected_export_kwargs.update(extra_kwarg)
 
     mock_ee.Geometry.Polygon.assert_called_once_with(fake_aoi)
     mock_ee.batch.Export.image.toAsset.assert_called_once_with(**expected_export_kwargs)
@@ -117,11 +117,11 @@ def test_export_to_asset(input_crs, extra_crs):
     assert actual_task_id == fake_task_id
 
 
-@pytest.mark.parametrize('input_crs,extra_crs', [
+@pytest.mark.parametrize('input_crs,extra_kwarg', [
     (None, {}),
     ('EPSG:BOGUS', {'crs': 'EPSG:BOGUS'})
 ])
-def test_export_to_gcs(input_crs, extra_crs):
+def test_export_to_gcs(input_crs, extra_kwarg):
     fake_aoi = {'foo': 'bar'}
     fake_image = MagicMock()
     fake_gcs_bucket_name = 'bogus-bucket'
@@ -148,7 +148,7 @@ def test_export_to_gcs(input_crs, extra_crs):
         'scale': 10,
         'maxPixels': 1e13
     }
-    expected_export_kwargs.update(extra_crs)
+    expected_export_kwargs.update(extra_kwarg)
 
     mock_ee.Geometry.Polygon.assert_called_once_with(fake_aoi)
     mock_ee.batch.Export.image.toCloudStorage.assert_called_once_with(**expected_export_kwargs)
