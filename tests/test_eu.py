@@ -3,7 +3,7 @@ from unittest.mock import call, MagicMock, patch
 
 import pytest
 
-from eeutils import eu
+from geeutils import eu
 
 
 class TestAuthenticate:
@@ -15,7 +15,7 @@ class TestAuthenticate:
         mock_ee = MagicMock()
         fake_credentials = MagicMock()
         mock_ee.ServiceAccountCredentials.return_value = fake_credentials
-        with patch.multiple('eeutils.eu',
+        with patch.multiple('geeutils.eu',
                             ee=mock_ee,
                             os=mock_os):
             eu.authenticate()
@@ -29,7 +29,7 @@ class TestAuthenticate:
         fake_service_account_key = ''
         mock_os.environ = {'SERVICE_ACCOUNT_KEY': fake_service_account_key}
         with pytest.raises(ValueError) as e:
-            with patch('eeutils.eu.os', mock_os):
+            with patch('geeutils.eu.os', mock_os):
                 eu.authenticate()
 
         expected_message = 'SERVICE_ACCOUNT_KEY is empty or contains invalid JSON'
@@ -49,7 +49,7 @@ class TestCreateAssetFolder:
         mock_ee.data.getInfo.side_effect = info_return_values
         mock_ee.data.createAsset.return_value = {'type': 'Folder', 'id': self.fake_gee_asset_path}
 
-        with patch.multiple('eeutils.eu',
+        with patch.multiple('geeutils.eu',
                             ee=mock_ee):
             eu.create_asset_folder(self.fake_gee_asset_path)
 
@@ -69,7 +69,7 @@ class TestCreateAssetFolder:
     def test_strips_leading_and_trailing_slashes_from_asset_id(self, asset_id):
         mock_ee = MagicMock()
         mock_ee.data.getInfo.return_value = None
-        with patch('eeutils.eu.ee', mock_ee):
+        with patch('geeutils.eu.ee', mock_ee):
             eu.create_asset_folder(asset_id)
 
         expected_asset = {'type': 'Folder'}
@@ -96,7 +96,7 @@ def test_export_to_asset(input_crs, extra_kwarg):
     mock_ee.Geometry.Polygon.return_value = mock_geometry
     mock_ee.batch.Export.image.toAsset.return_value = mock_export
 
-    with patch('eeutils.eu.ee', mock_ee):
+    with patch('geeutils.eu.ee', mock_ee):
         actual_task_id = eu.export_to_asset(fake_aoi,
                                             fake_image,
                                             fake_asset_id,
@@ -133,7 +133,7 @@ def test_export_to_gcs(input_crs, extra_kwarg):
     mock_ee.Geometry.Polygon.return_value = mock_geometry
     mock_ee.batch.Export.image.toCloudStorage.return_value = mock_export
 
-    with patch('eeutils.eu.ee', mock_ee):
+    with patch('geeutils.eu.ee', mock_ee):
         actual_task_id = eu.export_to_gcs(fake_aoi,
                                           fake_image,
                                           fake_gcs_bucket_name,
