@@ -6,7 +6,7 @@ with open("README.md", "r") as f:
 
 
 setup(
-    name='eeutils',
+    name='geeutils',
     version='0.1.0',
     description='Utility functions for Google Earth Engine',
     long_description=long_description,
