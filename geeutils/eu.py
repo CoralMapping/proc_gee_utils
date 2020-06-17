@@ -19,7 +19,14 @@ def authenticate() -> None:
         None
     """
 
-    service_account_key = os.environ['SERVICE_ACCOUNT_KEY']
+    try:
+        service_account_key = os.environ['SERVICE_ACCOUNT_KEY']
+    except KeyError:
+        if not os.path.exists('/root/.config/earthengine/credentials'):
+            ee.Authenticate()
+        ee.Initialize()
+        return
+
     try:
         service_account_name = json.loads(service_account_key)['client_email']
     except json.decoder.JSONDecodeError as e:
