@@ -24,7 +24,7 @@ $ pipenv install proc_gee_utils = "==0.0.1"
 ```
 
 ### Authentication
-To function properly, this code needs credentials that it can use to authenticate against the Google Cloud Storage API.  Credentials can be provided in one of three ways, and the code will look for them in this order:
+To function properly, this code needs credentials that it can use to authenticate against the Google Earth Engine API.  Credentials can be provided in one of three ways, and the code will look for them in this order:
 
 1. Service Account Key.
 
