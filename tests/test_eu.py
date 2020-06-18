@@ -8,7 +8,7 @@ from geeutils import eu
 
 class TestAuthenticate:
 
-    def test_happy_path(self):
+    def test_works_with_service_account_key(self):
         mock_os = MagicMock()
         fake_service_account_key = json.dumps({'client_email': 'foo@bar.com'})
         mock_os.environ = {'SERVICE_ACCOUNT_KEY': fake_service_account_key}
@@ -35,6 +35,33 @@ class TestAuthenticate:
         expected_message = 'SERVICE_ACCOUNT_KEY is empty or contains invalid JSON'
         assert expected_message in e.exconly()
 
+    def test_works_with_supplied_personal_credentials_file(self):
+        mock_os = MagicMock()
+        mock_os.environ = {}
+        mock_os.path.exists.return_value = True
+        mock_ee = MagicMock()
+        with patch.multiple('geeutils.eu',
+                            ee=mock_ee,
+                            os=mock_os):
+            eu.authenticate()
+
+        mock_os.path.exists.assert_called_once_with('/root/.config/earthengine/credentials')
+        mock_ee.Authenticate.assert_not_called()
+        mock_ee.Initialize.assert_called_once_with()
+
+    def test_uses_oauth_flow_if_credentials_not_found(self):
+        mock_os = MagicMock()
+        mock_os.environ = {}
+        mock_os.path.exists.return_value = False
+        mock_ee = MagicMock()
+        with patch.multiple('geeutils.eu',
+                            ee=mock_ee,
+                            os=mock_os):
+            eu.authenticate()
+
+        mock_os.path.exists.assert_called_once_with('/root/.config/earthengine/credentials')
+        mock_ee.Authenticate.assert_called_once_with()
+        mock_ee.Initialize.assert_called_once_with()
 
 class TestCreateAssetFolder:
 

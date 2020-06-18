@@ -24,7 +24,23 @@ $ pipenv install proc_gee_utils = "==0.0.1"
 ```
 
 ### Authentication
-To function properly, this code expects an environment variable named `SERVICE_ACCOUNT_KEY` to exist and contain the JSON key for a Google Cloud service account with the necessary permissions to perform the actions you're trying to perform in GEE.
+To function properly, this code needs credentials that it can use to authenticate against the Google Earth Engine API.  Credentials can be provided in one of three ways, and the code will look for them in this order:
+
+1. Service Account Key.
+
+Before running this code, create an environment variable named `SERVICE_ACCOUNT_KEY` containing the JSON key for a Google Cloud service account with the necessary permissions to perform the actions you're trying to perform in GEE.
+
+2. Personal Credentials set in advance.
+
+Before running this code, authenticate with the Google Earth Engine API using the `earthengine` command line tool:
+```
+$ earthengine authenticate
+```
+
+3. Personal Credentials provided on the fly.
+
+If neither of the above credentials are available when the code runs, you will be prompted to authenticate.
+
 
 ### Continuous Integration
 
