@@ -31,7 +31,7 @@ setup(
     install_requires=['earthengine-api>=0.1.236'],
     classifiers=[
         'Programming Language :: Python :: 3',
-        'License :: OSI Approved :: Apache 2.0 Software License',
+        'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
     ],
     python_requires='>=3.6',
