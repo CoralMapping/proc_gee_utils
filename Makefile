@@ -33,7 +33,7 @@ menu:
 
 .PHONY: test
 test:  $(shell find $(CURDIR)/geeutils -type f) ## Run the unit tests
-	@ ./tests/env.sh && pipenv run pytest
+	@ . tests/env.sh && pipenv run pytest
 
 .PHONY: build
 build:  $(archive) ## Build the Python archive

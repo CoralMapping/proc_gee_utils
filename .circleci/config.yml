@@ -1,3 +1,15 @@
+# Copyright Vulcan Inc. 2018-2020
+#
+# Licensed under the Apache License, Version 2.0 (the "License").
+# You may not use this file except in compliance with the License.
+# A copy of the License is located at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# or in the "license" file accompanying this file. This file is distributed
+# on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+# express or implied. See the License for the specific language governing
+# permissions and limitations under the License.
 version: 2.1
 commands:
   setup:
@@ -38,7 +50,7 @@ jobs:
       - run: |
           touch dist/*
           if [ "$CIRCLE_BRANCH" = "develop" ]; then
-            make publish pypi_repository=pypi pypi_repository_username="__token__" pypi_repository_password="$PYPI_ORG_TOKEN"
+            make publish pypi_repository_username="__token__" pypi_repository_password="$PYPI_ORG_TOKEN pypi_repository=pypi"
           else
             make publish pypi_repository_username="__token__" pypi_repository_password="$TEST_PYPI_ORG_TOKEN"
           fi
