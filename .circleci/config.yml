@@ -1,16 +1,3 @@
-# Copyright Vulcan Inc. 2018-2020
-#
-# Licensed under the Apache License, Version 2.0 (the "License").
-# You may not use this file except in compliance with the License.
-# A copy of the License is located at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# or in the "license" file accompanying this file. This file is distributed
-# on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
-# express or implied. See the License for the specific language governing
-# permissions and limitations under the License.
-
 version: 2.1
 commands:
   setup:
@@ -34,22 +21,27 @@ jobs:
       - setup
       - run: |
           if [ "$CIRCLE_BRANCH" = "develop" ]; then
-            make build beta_tag_suffix=""
+            make build prerelease=""
           else
-            make build beta_tag_suffix="-$CIRCLE_BRANCH"
+            make build prerelease="b$(git rev-list --count HEAD --not origin/develop)"
           fi
       - persist_to_workspace:
           root: .
           paths:
-            - dist/*.tar.gz
+            - dist/*
   publish:
     executor: circleci_executor
     steps:
       - setup
       - attach_workspace:
           at: .
-      - run: touch dist/*.tar.gz
-      - run: make publish pypi_repository_password="$PYPI_REPOSITORY_PASSWORD"
+      - run: |
+          touch dist/*
+          if [ "$CIRCLE_BRANCH" = "develop" ]; then
+            make publish pypi_repository=pypi pypi_repository_username="__token__" pypi_repository_password="$PYPI_ORG_TOKEN"
+          else
+            make publish pypi_repository_username="__token__" pypi_repository_password="$TEST_PYPI_ORG_TOKEN"
+          fi
 workflows:
   version: 2
   ci:
