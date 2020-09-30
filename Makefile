@@ -40,7 +40,7 @@ build:  $(archive) ## Build the Python archive
 	@ :
 
 $(archive): setup.py $(shell find $(CURDIR)/geeutils -type f)
-	@ pipenv run python setup.py egg_info --tag-build=$(beta_tag_suffix) sdist
+	@ pipenv run python setup.py egg_info --tag-build=$(beta_tag_suffix) sdist bdist_wheel
 
 .PHONY: publish
 publish:  $(archive) ## Publish the Python archive to the PyPi repository
