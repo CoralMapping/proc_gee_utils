@@ -50,7 +50,7 @@ jobs:
       - run: |
           touch dist/*
           if [ "$CIRCLE_BRANCH" = "develop" ]; then
-            make publish pypi_repository_username="__token__" pypi_repository_password="$PYPI_ORG_TOKEN pypi_repository=pypi"
+            make publish pypi_repository_username="__token__" pypi_repository_password="$PYPI_ORG_TOKEN" pypi_repository=pypi
           else
             make publish pypi_repository_username="__token__" pypi_repository_password="$TEST_PYPI_ORG_TOKEN"
           fi
