@@ -91,6 +91,8 @@ class TestAuthenticate:
                                 ee=mock_ee,
                                 os=mock_os):
                 eu.authenticate(allow_interactive=False)
+        
+        mock_ee.Authenticate.assert_not_called()
             
 
 class TestCreateAssetFolder:
