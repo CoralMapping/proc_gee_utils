@@ -85,6 +85,7 @@ class TestAuthenticate:
         mock_os.environ = {}
         mock_os.path.exists.return_value = False
         mock_ee = MagicMock()
+        mock_ee.ee_exception.EEException = ee.ee_exception.EEException
         with pytest.raises(ee.ee_exception.EEException):
             with patch.multiple('geeutils.eu',
                                 ee=mock_ee,
