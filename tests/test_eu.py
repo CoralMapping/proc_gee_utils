@@ -18,6 +18,7 @@ import json
 from unittest.mock import call, MagicMock, patch
 
 import pytest
+import ee
 
 from geeutils import eu
 
@@ -78,6 +79,21 @@ class TestAuthenticate:
         mock_os.path.exists.assert_called_once_with('/root/.config/earthengine/credentials')
         mock_ee.Authenticate.assert_called_once_with()
         mock_ee.Initialize.assert_called_once_with()
+
+    def test_auth_fails_if_no_service_key_no_credentials(self):
+        mock_os = MagicMock()
+        mock_os.environ = {}
+        mock_os.path.exists.return_value = False
+        mock_ee = MagicMock()
+        mock_ee.ee_exception.EEException = ee.ee_exception.EEException
+        with pytest.raises(ee.ee_exception.EEException):
+            with patch.multiple('geeutils.eu',
+                                ee=mock_ee,
+                                os=mock_os):
+                eu.authenticate(allow_interactive=False)
+        
+        mock_ee.Authenticate.assert_not_called()
+            
 
 class TestCreateAssetFolder:
 

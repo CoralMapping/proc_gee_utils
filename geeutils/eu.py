@@ -22,14 +22,15 @@ import os
 import ee
 
 
-def authenticate() -> None:
+def authenticate(allow_interactive=True) -> None:
     """Authenticate with the GEE API.
 
     A SERVICE_ACCOUNT_KEY environment variable must be set with the key to a
     Google Cloud Platform service account that has permissions in GEE.
 
     Args:
-        None
+        allow_interactive: If False, does not allow the interactive login workflow.
+                           Default=True, continue to interactive login workflow.
 
     Returns:
         None
@@ -39,6 +40,8 @@ def authenticate() -> None:
         service_account_key = os.environ['SERVICE_ACCOUNT_KEY']
     except KeyError:
         if not os.path.exists('/root/.config/earthengine/credentials'):
+            if not allow_interactive:
+                raise ee.ee_exception.EEException('You cannot authenticate as SERVICE_ACCOUNT_KEY and GEE credentials file is missing')
             ee.Authenticate()
         ee.Initialize()
         return
