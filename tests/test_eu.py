@@ -176,7 +176,7 @@ def test_export_to_asset(input_crs, extra_kwarg):
     assert actual_task_id == fake_task_id
 
 
-@pytest.mark.parametrize('input_crs,input_skip_empty_tiles,extra_kwarg', [
+@pytest.mark.parametrize('input_crs,extra_kwarg', [
     (None, {}),
     ('EPSG:BOGUS', {'crs': 'EPSG:BOGUS'})
 ])
