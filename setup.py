@@ -1,5 +1,5 @@
 """
- Copyright Vulcan Inc. 2018-2020
+ Copyright Arizona State University 2021-2022
 
  Licensed under the Apache License, Version 2.0 (the "License").
  You may not use this file except in compliance with the License.
@@ -23,12 +23,12 @@ with open("README.md", "r") as f:
 
 setup(
     name='geeutils',
-    version='0.3.0',
+    version='0.4.0',
     description='Utility functions for Google Earth Engine',
     long_description=long_description,
     long_description_content_type='text/markdown',
     packages=find_packages(),
-    install_requires=['earthengine-api>=0.1.236'],
+    install_requires=['earthengine-api>=0.1.303'],
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: Apache Software License',

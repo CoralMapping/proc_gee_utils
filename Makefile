@@ -1,4 +1,4 @@
-# Copyright Vulcan Inc. 2018-2020
+# Copyright Arizona State University 2021-2022
 #
 # Licensed under the Apache License, Version 2.0 (the "License").
 # You may not use this file except in compliance with the License.
