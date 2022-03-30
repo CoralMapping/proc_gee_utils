@@ -1,5 +1,5 @@
 """
- Copyright Vulcan Inc. 2018-2020
+ Copyright Arizona State University 2021-2022
 
  Licensed under the Apache License, Version 2.0 (the "License").
  You may not use this file except in compliance with the License.
@@ -120,7 +120,8 @@ def export_to_gcs(aoi: dict,
                   image: ee.Image,
                   gcs_bucket_name: str,
                   gcs_path: str,
-                  crs: str=None) -> str:
+                  crs: str=None,
+                  skip_empty_tiles: bool=False) -> str:
     """Export an image to Google Cloud Storage (GCS).
 
     Depending on the size of the image, GEE may export it in multiple chunks.
@@ -131,6 +132,7 @@ def export_to_gcs(aoi: dict,
         gcs_bucket_name: The name of the target GCS bucket.
         gcs_path: The path in the bucket where the image should be exported.
         crs: Optional.  If provided, convert the image to this Coordinate Reference System.
+        skip_empty_tiles: Optional.  If True, empty tiles will not be exported (default False).
 
     Returns:
         A string containing the GEE export task ID.
@@ -145,7 +147,8 @@ def export_to_gcs(aoi: dict,
         'fileNamePrefix': gcs_path,
         'region': region,
         'scale': 10,
-        'maxPixels': 1e13
+        'maxPixels': 1e13,
+        'skipEmptyTiles': skip_empty_tiles
     }
     if crs:
         export_kwargs.update({'crs': crs})

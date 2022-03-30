@@ -1,5 +1,5 @@
 """
- Copyright Vulcan Inc. 2018-2020
+ Copyright Arizona State University 2021-2022
 
  Licensed under the Apache License, Version 2.0 (the "License").
  You may not use this file except in compliance with the License.
@@ -205,7 +205,8 @@ def test_export_to_gcs(input_crs, extra_kwarg):
         'fileNamePrefix': fake_gcs_path,
         'region': mock_geometry,
         'scale': 10,
-        'maxPixels': 1e13
+        'maxPixels': 1e13,
+        'skipEmptyTiles': False
     }
     expected_export_kwargs.update(extra_kwarg)
 

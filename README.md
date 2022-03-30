@@ -64,5 +64,5 @@ The credentials necessary to publish to the target PyPI repository can be provid
 
 2. At the `make publish` command:
 ```
-$ make publish pypi_repository_password="foo" pypi_repository_password="bar"
+$ make publish pypi_repository_username="foo" pypi_repository_password="bar"
 ```
