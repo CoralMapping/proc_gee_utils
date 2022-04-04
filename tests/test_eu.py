@@ -186,6 +186,7 @@ def test_export_to_gcs(input_crs, extra_kwarg):
     fake_gcs_bucket_name = 'bogus-bucket'
     fake_gcs_path= 'bogus/path/to/blob'
     mock_geometry = MagicMock()
+    fake_file_dimensions = 256
     fake_task_id = 'MYFAKETASKIDMYFAKETASKID'
     mock_ee = MagicMock()
     mock_export = MagicMock(id=fake_task_id)
@@ -197,7 +198,8 @@ def test_export_to_gcs(input_crs, extra_kwarg):
                                           fake_image,
                                           fake_gcs_bucket_name,
                                           fake_gcs_path,
-                                          input_crs)
+                                          input_crs,
+                                          fake_file_dimensions)
 
     expected_export_kwargs = {
         'image': fake_image,
@@ -206,6 +208,7 @@ def test_export_to_gcs(input_crs, extra_kwarg):
         'region': mock_geometry,
         'scale': 10,
         'maxPixels': 1e13,
+        'fileDimensions': [fake_file_dimensions] * 2,
         'skipEmptyTiles': False
     }
     expected_export_kwargs.update(extra_kwarg)

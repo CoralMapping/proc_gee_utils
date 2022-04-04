@@ -121,6 +121,7 @@ def export_to_gcs(aoi: dict,
                   gcs_bucket_name: str,
                   gcs_path: str,
                   crs: str=None,
+                  file_dimensions: int=None,
                   skip_empty_tiles: bool=False) -> str:
     """Export an image to Google Cloud Storage (GCS).
 
@@ -132,6 +133,7 @@ def export_to_gcs(aoi: dict,
         gcs_bucket_name: The name of the target GCS bucket.
         gcs_path: The path in the bucket where the image should be exported.
         crs: Optional.  If provided, convert the image to this Coordinate Reference System.
+        file_dimensions: Optional.  If provided, exported images will have the specified height and width in pixels.  Must be a multiple of 256.
         skip_empty_tiles: Optional.  If True, empty tiles will not be exported (default False).
 
     Returns:
@@ -152,6 +154,8 @@ def export_to_gcs(aoi: dict,
     }
     if crs:
         export_kwargs.update({'crs': crs})
+    if file_dimensions:
+        export_kwargs.update({'fileDimensions': [file_dimensions] * 2})
     export = ee.batch.Export.image.toCloudStorage(**export_kwargs)
     export.start()
 
