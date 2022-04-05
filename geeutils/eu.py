@@ -133,7 +133,7 @@ def export_to_gcs(aoi: dict,
         gcs_bucket_name: The name of the target GCS bucket.
         gcs_path: The path in the bucket where the image should be exported.
         crs: Optional.  If provided, convert the image to this Coordinate Reference System.
-        file_dimensions: Optional.  If provided, exported images will have the specified height and width in pixels.  Must be a multiple of 256.
+        file_dimensions: Optional.  If provided, exported images will have the specified height and width in pixels.  Must be a positive integer multiple of 256.
         skip_empty_tiles: Optional.  If True, empty tiles will not be exported (default False).
 
     Returns:
@@ -154,7 +154,13 @@ def export_to_gcs(aoi: dict,
     }
     if crs:
         export_kwargs.update({'crs': crs})
-    if file_dimensions:
+    if file_dimensions is not None:
+        try:
+            file_dimensions = int(file_dimensions)
+            assert file_dimensions > 0
+            assert file_dimensions % 256 == 0
+        except (AssertionError, ValueError):
+            raise ValueError(f'file_dimensions value {file_dimensions} is not a positive integer multiple of 256')
         export_kwargs.update({'fileDimensions': [file_dimensions] * 2})
     export = ee.batch.Export.image.toCloudStorage(**export_kwargs)
     export.start()
