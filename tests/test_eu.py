@@ -176,41 +176,68 @@ def test_export_to_asset(input_crs, extra_kwarg):
     assert actual_task_id == fake_task_id
 
 
-@pytest.mark.parametrize('input_crs,extra_kwarg', [
-    (None, {}),
-    ('EPSG:BOGUS', {'crs': 'EPSG:BOGUS'})
-])
-def test_export_to_gcs(input_crs, extra_kwarg):
-    fake_aoi = {'foo': 'bar'}
-    fake_image = MagicMock()
-    fake_gcs_bucket_name = 'bogus-bucket'
-    fake_gcs_path= 'bogus/path/to/blob'
-    mock_geometry = MagicMock()
-    fake_task_id = 'MYFAKETASKIDMYFAKETASKID'
-    mock_ee = MagicMock()
-    mock_export = MagicMock(id=fake_task_id)
-    mock_ee.Geometry.Polygon.return_value = mock_geometry
-    mock_ee.batch.Export.image.toCloudStorage.return_value = mock_export
+class TestExportToGcs:
 
-    with patch('geeutils.eu.ee', mock_ee):
-        actual_task_id = eu.export_to_gcs(fake_aoi,
-                                          fake_image,
-                                          fake_gcs_bucket_name,
-                                          fake_gcs_path,
-                                          input_crs)
+    @pytest.mark.parametrize('input_crs,extra_kwarg', [
+        (None, {}),
+        ('EPSG:BOGUS', {'crs': 'EPSG:BOGUS'})
+    ])
+    def test_happy_path(self, input_crs, extra_kwarg):
+        fake_aoi = {'foo': 'bar'}
+        fake_image = MagicMock()
+        fake_gcs_bucket_name = 'bogus-bucket'
+        fake_gcs_path= 'bogus/path/to/blob'
+        mock_geometry = MagicMock()
+        fake_file_dimensions = 256
+        fake_task_id = 'MYFAKETASKIDMYFAKETASKID'
+        mock_ee = MagicMock()
+        mock_export = MagicMock(id=fake_task_id)
+        mock_ee.Geometry.Polygon.return_value = mock_geometry
+        mock_ee.batch.Export.image.toCloudStorage.return_value = mock_export
 
-    expected_export_kwargs = {
-        'image': fake_image,
-        'bucket': fake_gcs_bucket_name,
-        'fileNamePrefix': fake_gcs_path,
-        'region': mock_geometry,
-        'scale': 10,
-        'maxPixels': 1e13,
-        'skipEmptyTiles': False
-    }
-    expected_export_kwargs.update(extra_kwarg)
+        with patch('geeutils.eu.ee', mock_ee):
+            actual_task_id = eu.export_to_gcs(fake_aoi,
+                                              fake_image,
+                                              fake_gcs_bucket_name,
+                                              fake_gcs_path,
+                                              crs=input_crs,
+                                              file_dimensions=fake_file_dimensions)
 
-    mock_ee.Geometry.Polygon.assert_called_once_with(fake_aoi)
-    mock_ee.batch.Export.image.toCloudStorage.assert_called_once_with(**expected_export_kwargs)
-    mock_export.start.assert_called_once_with()
-    assert actual_task_id == fake_task_id
+        expected_export_kwargs = {
+            'image': fake_image,
+            'bucket': fake_gcs_bucket_name,
+            'fileNamePrefix': fake_gcs_path,
+            'region': mock_geometry,
+            'scale': 10,
+            'maxPixels': 1e13,
+            'fileDimensions': [fake_file_dimensions] * 2,
+            'skipEmptyTiles': False
+        }
+        expected_export_kwargs.update(extra_kwarg)
+
+        mock_ee.Geometry.Polygon.assert_called_once_with(fake_aoi)
+        mock_ee.batch.Export.image.toCloudStorage.assert_called_once_with(**expected_export_kwargs)
+        mock_export.start.assert_called_once_with()
+        assert actual_task_id == fake_task_id
+
+    @pytest.mark.parametrize('input_file_dimensions', [
+        -256,
+        0,
+        1000,
+        'not a numeric type'
+    ])
+    def test_raises_if_file_dimensions_not_valid(self, input_file_dimensions):
+        fake_aoi = {'foo': 'bar'}
+        fake_image = MagicMock()
+        fake_gcs_bucket_name = 'bogus-bucket'
+        fake_gcs_path= 'bogus/path/to/blob'
+        fake_file_dimensions = input_file_dimensions
+        mock_ee = MagicMock()
+
+        with pytest.raises(ValueError):
+            with patch('geeutils.eu.ee', mock_ee):
+                actual_task_id = eu.export_to_gcs(fake_aoi,
+                                                  fake_image,
+                                                  fake_gcs_bucket_name,
+                                                  fake_gcs_path,
+                                                  file_dimensions=fake_file_dimensions)
