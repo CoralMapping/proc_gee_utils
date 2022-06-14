@@ -22,7 +22,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="geeutils",
-    version="0.5.1",
+    version="1.0.0",
     description="Utility functions for Google Earth Engine",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -33,6 +33,6 @@ setup(
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],
-    python_requires=">=3.6",
+    python_requires=">=3.10",
     url="https://github.com/CoralMapping/proc_gee_utils",
 )
