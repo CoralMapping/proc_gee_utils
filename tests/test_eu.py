@@ -15,10 +15,9 @@ permissions and limitations under the License.
 
 
 import json
-from unittest.mock import call, MagicMock, patch
+from unittest.mock import MagicMock, call, patch
 
 import ee
-
 import pytest
 
 from geeutils import eu

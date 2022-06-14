@@ -21,7 +21,7 @@ commands:
 executors:
   circleci_executor:
     docker:
-      - image: cimg/python:3.6.12-stretch
+      - image: cimg/python:3.6.15
 jobs:
   test:
     executor: circleci_executor
