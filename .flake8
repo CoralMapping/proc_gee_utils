@@ -1,0 +1,17 @@
+[flake8]
+# Enable mccabe extension and use mccabe's recommended limit
+max-complexity = 10
+# flake8-expression-complexity
+max-expression-complexity = 5
+# Conform to black's formatting
+max-line-length = 88
+ignore =
+    # Allow __enter__ and __exit__ without docstring
+    D105,
+    # Allow __init__ without docstring
+    D107,
+    # Conflicts with black's formatting
+    W503
+per-file-ignores =
+    # Ignore docstring errors in test files
+    src/tests/*:D
