@@ -145,11 +145,13 @@ def test_export_to_asset(input_crs, extra_kwarg):
     mock_geometry = MagicMock()
     fake_task_id = "MYFAKETASKIDMYFAKETASKID"
     mock_ee = MagicMock()
-    mock_export = MagicMock(id=fake_task_id)
+    mock_export = MagicMock()
+    mock_export_task = MagicMock(id=fake_task_id)
+    mock_ee.batch.Export = mock_export
     mock_ee.Geometry.Polygon.return_value = mock_geometry
-    mock_ee.batch.Export.image.toAsset.return_value = mock_export
+    mock_export.image.toAsset.return_value = mock_export_task
 
-    with patch("geeutils.eu.ee", mock_ee):
+    with patch.multiple("geeutils.eu", ee=mock_ee, Export=mock_export):
         actual_task_id = eu.export_to_asset(
             fake_aoi, fake_image, fake_asset_id, input_crs
         )
@@ -164,8 +166,8 @@ def test_export_to_asset(input_crs, extra_kwarg):
     expected_export_kwargs.update(extra_kwarg)
 
     mock_ee.Geometry.Polygon.assert_called_once_with(fake_aoi)
-    mock_toasset.assert_called_once_with(**expected_export_kwargs)
-    mock_export.start.assert_called_once_with()
+    mock_export.image.toAsset.assert_called_once_with(**expected_export_kwargs)
+    mock_export_task.start.assert_called_once_with()
     assert actual_task_id == fake_task_id
 
 
@@ -182,13 +184,12 @@ class TestExportToGcs:
         fake_file_dimensions = 256
         fake_task_id = "MYFAKETASKIDMYFAKETASKID"
         mock_ee = MagicMock()
-        mock_export = MagicMock(id=fake_task_id)
-        mock_tocloudstorage = MagicMock()
-        mock_tocloudstorage.return_value = mock_export
-        mock_ee.batch.Export.image.to_CloudStorage = mock_tocloudstorage
+        mock_export_task = MagicMock(id=fake_task_id)
+        mock_export = MagicMock()
+        mock_export.image.toCloudStorage.return_value = mock_export_task
         mock_ee.Geometry.Polygon.return_value = mock_geometry
 
-        with patch("geeutils.eu.ee", mock_ee):
+        with patch.multiple("geeutils.eu", ee=mock_ee, Export=mock_export):
             actual_task_id = eu.export_to_gcs(
                 fake_aoi,
                 fake_image,
@@ -211,10 +212,10 @@ class TestExportToGcs:
         expected_export_kwargs.update(extra_kwarg)
 
         mock_ee.Geometry.Polygon.assert_called_once_with(fake_aoi)
-        mock_tocloudstorage.assert_called_once_with(
+        mock_export.image.toCloudStorage.assert_called_once_with(
             **expected_export_kwargs
         )
-        mock_export.start.assert_called_once_with()
+        mock_export_task.start.assert_called_once_with()
         assert actual_task_id == fake_task_id
 
     @pytest.mark.parametrize(
