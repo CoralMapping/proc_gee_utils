@@ -17,8 +17,9 @@
 import json
 from unittest.mock import call, MagicMock, patch
 
-import pytest
 import ee
+
+import pytest
 
 from geeutils import eu
 
