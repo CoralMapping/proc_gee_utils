@@ -19,6 +19,12 @@ $ earthengine authenticate
 
 This project uses [Pipenv](https://docs.pipenv.org/en/latest/) to manage virtual environments and dependencies. Development-time dependencies are documented in the `Pipfile`. Follow the `Pipenv` documentation to create a virtual environment and install the dependencies.
 
+This project also uses [pre-commit](https://pre-commit.com/) to run various Python code quality checks (linting and styling) on every commit.  Before you begin any development work, install the pre-commit hook with:
+
+```bash
+$ pre-commit install
+```
+
 #### Makefile
 
 The included `Makefile` prescribes actions to test, build, and publish this code to a Python Package Index (PyPI) repository as described in the following sections.
