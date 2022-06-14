@@ -145,11 +145,9 @@ def test_export_to_asset(input_crs, extra_kwarg):
     mock_geometry = MagicMock()
     fake_task_id = "MYFAKETASKIDMYFAKETASKID"
     mock_ee = MagicMock()
-    mock_toasset = MagicMock()
     mock_export = MagicMock(id=fake_task_id)
-    mock_toasset.return_value = mock_export
-    mock_ee.batch.Export.image.toAsset = mock_toasset
     mock_ee.Geometry.Polygon.return_value = mock_geometry
+    mock_ee.batch.Export.image.toAsset.return_value = mock_export
 
     with patch("geeutils.eu.ee", mock_ee):
         actual_task_id = eu.export_to_asset(
