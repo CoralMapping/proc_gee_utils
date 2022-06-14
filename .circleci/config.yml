@@ -15,13 +15,13 @@ commands:
   setup:
     steps:
       - setup_remote_docker:
-          version: 19.03.13
+          version: 20.10.14
       - checkout
       - run: pipenv install
 executors:
   circleci_executor:
     docker:
-      - image: circleci/python:3.6.12-stretch
+      - image: cimg/python:3.6.12-stretch
 jobs:
   test:
     executor: circleci_executor

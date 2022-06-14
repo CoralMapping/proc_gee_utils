@@ -23,6 +23,7 @@ pypi_repository := testpypi
 pypi_repository_username := $(PYPI_REPOSITORY_USERNAME)
 pypi_repository_password ?= $(PYPI_REPOSITORY_PASSWORD)
 prerelease ?= b$(shell git rev-list --count HEAD ^develop)
+python_quality_tools_image := gcr.io/coral-atlas/baseimages/python-quality-tools:latest
 
 %:
 	@:
@@ -30,6 +31,14 @@ prerelease ?= b$(shell git rev-list --count HEAD ^develop)
 .PHONY: menu
 menu:
 	@ grep -E '^[a-zA-Z_-]+:.*?## .*$$' Makefile | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-35s\033[0m %s\n", $$1, $$2}'
+
+.PHONY: check
+check:  ## Run Python quality tools
+	# See https://circleci.com/docs/2.0/building-docker-images/#mounting-folders
+	@- docker create -v /app --name app_files alpine:3.4 /bin/true && \
+		docker cp . app_files:/app && \
+		docker run --rm --volumes-from app_files $(python_quality_tools_image)
+	@ docker rm app_files &>/dev/null
 
 .PHONY: test
 test:  $(shell find $(CURDIR)/geeutils -type f) ## Run the unit tests
