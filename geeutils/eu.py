@@ -38,10 +38,12 @@ def authenticate(allow_interactive=True) -> None:
     except KeyError:
         if not os.path.exists("/root/.config/earthengine/credentials"):
             if not allow_interactive:
-                raise ee.ee_exception.EEException((
-                    "Cannot authenticate: SERVICE_ACCOUNT_KEY environment variable "
-                    "and GEE credentials file is missing"
-                ))
+                raise ee.ee_exception.EEException(
+                    (
+                        "Cannot authenticate: SERVICE_ACCOUNT_KEY environment variable "
+                        "and GEE credentials file is missing"
+                    )
+                )
             ee.Authenticate()
         ee.Initialize()
         return
@@ -167,10 +169,12 @@ def export_to_gcs(
             assert file_dimensions > 0
             assert file_dimensions % 256 == 0
         except (AssertionError, ValueError):
-            raise ValueError((
-                f"file_dimensions value {file_dimensions} is not a positive "
-                "integer multiple of 256"
-            ))
+            raise ValueError(
+                (
+                    f"file_dimensions value {file_dimensions} is not a positive "
+                    "integer multiple of 256"
+                )
+            )
         export_kwargs.update({"fileDimensions": [file_dimensions] * 2})
     export = Export.image.toCloudStorage(**export_kwargs)
     export.start()
