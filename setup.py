@@ -22,7 +22,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="geeutils",
-    version="1.0.0",
+    version="1.0.1",
     description="Utility functions for Google Earth Engine",
     long_description=long_description,
     long_description_content_type="text/markdown",
