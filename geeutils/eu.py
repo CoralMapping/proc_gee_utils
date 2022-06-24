@@ -17,6 +17,7 @@ import json
 import os
 
 import ee
+import httplib2
 from ee.batch import Export
 
 
@@ -45,7 +46,7 @@ def authenticate(allow_interactive=True) -> None:
                     )
                 )
             ee.Authenticate()
-        ee.Initialize()
+        ee.Initialize(http_transport=httplib2.Http())
         return
 
     try:
