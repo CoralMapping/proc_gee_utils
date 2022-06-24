@@ -18,6 +18,7 @@ import json
 from unittest.mock import MagicMock, call, patch
 
 import ee
+import httplib2
 import pytest
 
 from geeutils import eu
@@ -37,7 +38,9 @@ class TestAuthenticate:
         mock_ee.ServiceAccountCredentials.assert_called_once_with(
             "foo@bar.com", key_data=fake_service_account_key
         )
-        mock_ee.Initialize.assert_called_once_with(fake_credentials)
+        mock_ee.Initialize.assert_called_once_with(
+            fake_credentials, http_transport=httplib2.Http()
+        )
 
     def test_clear_message_if_key_is_invalid_json(self):
         mock_os = MagicMock()
@@ -62,7 +65,7 @@ class TestAuthenticate:
             "/root/.config/earthengine/credentials"
         )
         mock_ee.Authenticate.assert_not_called()
-        mock_ee.Initialize.assert_called_once_with()
+        mock_ee.Initialize.assert_called_once_with(http_transport=httplib2.Http())
 
     def test_uses_oauth_flow_if_credentials_not_found(self):
         mock_os = MagicMock()
@@ -76,7 +79,7 @@ class TestAuthenticate:
             "/root/.config/earthengine/credentials"
         )
         mock_ee.Authenticate.assert_called_once_with()
-        mock_ee.Initialize.assert_called_once_with()
+        mock_ee.Initialize.assert_called_once_with(http_transport=httplib2.Http())
 
     def test_auth_fails_if_no_service_key_no_credentials(self):
         mock_os = MagicMock()

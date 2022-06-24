@@ -56,7 +56,7 @@ def authenticate(allow_interactive=True) -> None:
     credentials = ee.ServiceAccountCredentials(
         service_account_name, key_data=service_account_key
     )
-    ee.Initialize(credentials)
+    ee.Initialize(credentials, http_transport=httplib2.Http())
 
 
 def create_asset_folder(asset_id: str) -> None:
