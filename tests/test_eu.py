@@ -15,6 +15,7 @@ permissions and limitations under the License.
 
 
 import json
+import os
 from unittest.mock import MagicMock, call, patch
 
 import ee
@@ -61,6 +62,8 @@ class TestAuthenticate:
         mock_os = MagicMock()
         mock_os.environ = {}
         mock_os.path.exists.return_value = True
+        mock_os.path.join = os.path.join
+        mock_os.path.expanduser = os.path.expanduser
         mock_ee = MagicMock()
         mock_httplib2 = MagicMock()
         mock_http = MagicMock()
@@ -70,9 +73,10 @@ class TestAuthenticate:
         ):
             eu.authenticate()
 
-        mock_os.path.exists.assert_called_once_with(
-            "/root/.config/earthengine/credentials"
+        expected_credentials_location = os.path.join(
+            os.path.expanduser("~"), ".config", "earthengine", "credentials"
         )
+        mock_os.path.exists.assert_called_once_with(expected_credentials_location)
         mock_ee.Authenticate.assert_not_called()
         mock_ee.Initialize.assert_called_once_with(http_transport=mock_http)
 
@@ -80,6 +84,8 @@ class TestAuthenticate:
         mock_os = MagicMock()
         mock_os.environ = {}
         mock_os.path.exists.return_value = False
+        mock_os.path.join = os.path.join
+        mock_os.path.expanduser = os.path.expanduser
         mock_ee = MagicMock()
         mock_httplib2 = MagicMock()
         mock_http = MagicMock()
@@ -89,9 +95,10 @@ class TestAuthenticate:
         ):
             eu.authenticate()
 
-        mock_os.path.exists.assert_called_once_with(
-            "/root/.config/earthengine/credentials"
+        expected_credentials_location = os.path.join(
+            os.path.expanduser("~"), ".config", "earthengine", "credentials"
         )
+        mock_os.path.exists.assert_called_once_with(expected_credentials_location)
         mock_ee.Authenticate.assert_called_once_with()
         mock_ee.Initialize.assert_called_once_with(http_transport=mock_http)
 
