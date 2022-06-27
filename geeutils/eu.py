@@ -37,7 +37,10 @@ def authenticate(allow_interactive=True) -> None:
     try:
         service_account_key = os.environ["SERVICE_ACCOUNT_KEY"]
     except KeyError:
-        if not os.path.exists("/root/.config/earthengine/credentials"):
+        gee_credentials_file_default_location = os.path.join(
+            os.path.expanduser("~"), ".config", "earthengine", "credentials"
+        )
+        if not os.path.exists(gee_credentials_file_default_location):
             if not allow_interactive:
                 raise ee.ee_exception.EEException(
                     (
