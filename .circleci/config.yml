@@ -14,8 +14,7 @@ version: 2.1
 commands:
   setup:
     steps:
-      - setup_remote_docker:
-          version: 20.10.14
+      - setup_remote_docker
       - checkout
       - run: pipenv install
 executors:
