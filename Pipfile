@@ -7,7 +7,7 @@ name = "pypi"
 earthengine-api = "~=0.1.312"
 pre-commit = "~=2.19.0"
 pytest = "~=7.1.2"
-setuptools = "~=62.4.0"
+setuptools = "~=65.5.1"
 twine = "~=4.0.1"
 
 [dev-packages]
