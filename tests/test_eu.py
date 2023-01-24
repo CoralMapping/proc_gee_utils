@@ -121,7 +121,7 @@ class TestCreateAssetFolder:
 
     def test_happy_path(self):
         mock_ee = MagicMock()
-        info_return_values = [{"type": "Folder", "id": "projects/path/to"}, None]
+        info_return_values = [{"type": "Folder", "id": "projects/path/to"}, None, None]
         mock_ee.data.getInfo.side_effect = info_return_values
         mock_ee.data.createAsset.return_value = {
             "type": "Folder",
@@ -132,15 +132,18 @@ class TestCreateAssetFolder:
             eu.create_asset_folder(self.fake_gee_asset_path)
 
         mock_ee.data.getInfo.assert_has_calls(
-            [call("projects/path/to"), call("projects/path/to/my")]
+            [call("projects/path/to/my"), call("projects/path/to/my/folder")]
         )
         expected_asset = {"type": "Folder"}
-        mock_ee.data.createAsset.assert_called_once_with(
-            expected_asset, opt_path="projects/path/to/my"
+        mock_ee.data.createAsset.assert_has_calls(
+            [
+                call(expected_asset, opt_path="projects/path/to/my"),
+                call(expected_asset, opt_path="projects/path/to/my/folder"),
+            ]
         )
 
     @pytest.mark.parametrize(
-        "asset_id", ["/foo/bar/baz/quux", "foo/bar/baz/quux/", "/foo/bar/baz/quux/"]
+        "asset_id", ["/foo/bar/baz", "foo/bar/baz/", "/foo/bar/baz/"]
     )
     def test_strips_leading_and_trailing_slashes_from_asset_id(self, asset_id):
         mock_ee = MagicMock()
