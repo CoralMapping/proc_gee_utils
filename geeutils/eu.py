@@ -62,30 +62,34 @@ def authenticate(allow_interactive=True) -> None:
     ee.Initialize(credentials, http_transport=httplib2.Http())
 
 
-def create_asset_folder(asset_id: str) -> None:
+def create_asset_folder(folder_path: str) -> None:
     """Create an asset folder in GEE.
 
     Also create intermediate folders along the path, if they don't already
     exist.
 
     Args:
-        asset_id: A path to the folder to be created.
+        folder_path: A path to the folder to be created. Note that GEE expects the path
+            to start with:
+            users/[user_name]/, or
+            projects/[project_name]/
 
     Returns:
         None
     """
-    if asset_id.startswith("/"):
-        asset_id = asset_id[1:]
-    if asset_id.endswith("/"):
-        asset_id = asset_id[:-1]
-    path_segments = asset_id.split("/")
+    if folder_path.startswith("/"):
+        folder_path = folder_path[1:]
+    if folder_path.endswith("/"):
+        folder_path = folder_path[:-1]
+    path_segments = folder_path.split("/")
     if len(path_segments) < 3:
         raise ValueError(
-            "GEE asset id {} is too short (must have more than 2 path segments)".format(
-                asset_id
+            (
+                f"GEE folder path {folder_path} is too short "
+                "(must have more than 2 path segments)"
             )
         )
-    for i in range(2, len(path_segments) - 1):
+    for i in range(2, len(path_segments)):
         path = "/".join(path_segments[: i + 1])
         if not ee.data.getInfo(path):
             ee.data.createAsset({"type": "Folder"}, opt_path=path)
